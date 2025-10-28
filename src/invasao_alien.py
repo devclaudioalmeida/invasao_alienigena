@@ -88,6 +88,15 @@ class InvasaoAlien:
             nova_bala = Bala(self)
             self.balas.add(nova_bala)
 
+    def _verifica_colisao_bala_alien(self):
+        #Verifica se alguma bala atingiu algum alienígena
+        #Se sim descarta a bala e o alienígena
+        colisoes = pygame.sprite.groupcollide(self.balas, self.aliens, True, True)
+        if not self.aliens:
+            # Destroi os projeteis existentes e cria uma frota de alienigenas nova
+            self.balas.empty()
+            self._cria_frota_alien()
+
 
     def _atualiza_balas(self):
         """ Atualiza a posição das balas e descarta as antigas"""
@@ -101,6 +110,15 @@ class InvasaoAlien:
         #Somente para verificação, pode remover
         #print(len(self.balas))
 
+        # Se alguma bala atingir algum alienígena eleimina ambos
+        self._verifica_colisao_bala_alien()
+
+
+    def _atualiza_aliens(self):
+        """Verifica se tem algum alienígena na borda, em seguida atualiza as posiçoes"""
+        self._verifica_alien_na_borda()
+        self.aliens.update()
+
 
     def _cria_alien(self, pos_horizontal, pos_vertical):
         """ Cria um alienígena e posiciona na fileira"""
@@ -109,6 +127,21 @@ class InvasaoAlien:
         novo_alien.rect.x = pos_horizontal
         novo_alien.rect.y = pos_vertical
         self.aliens.add(novo_alien)
+    
+
+    def _verifica_alien_na_borda(self):
+        """Responde apropriandamente se algum alinenpigena alcançou alguma borda"""
+        for alien in self.aliens.sprites():
+            if alien.checa_bordas():
+                self._muda_direcao_frota()
+                break
+    
+    
+    def _muda_direcao_frota(self):
+        """Faz toda a frota descer e mudar de diração"""
+        for alien in self.aliens.sprites():
+            alien.rect.y += self.config.velocidade_descida_frota
+        self.config.direcao_frota *= -1
 
 
     def _cria_frota_alien(self):
@@ -150,6 +183,7 @@ class InvasaoAlien:
             self._checa_eventos()
             self.nave.atualiza()
             self._atualiza_balas()
+            self._atualiza_aliens()
             self._atualiza_tela()
             self.clock.tick(60)
 
