@@ -7,6 +7,7 @@ from espaconave import Nave
 from bala import Bala
 from alien import Alienigena
 from estatisticas import EstatisticasJogo
+from botao import Botao
 
 class InvasaoAlien:
     """Classe principal do jogo"""
@@ -33,7 +34,10 @@ class InvasaoAlien:
         self._cria_frota_alien()
 
         # Inicializa Invasão Alienigena com um estado ativo
-        self.jogo_ativo = True
+        self.jogo_ativo = False
+
+        #Cria o botão play
+        self.botao_play = Botao(self, "JOGAR")
 
 
     def _checa_keydown_eventos(self,event):
@@ -73,6 +77,21 @@ class InvasaoAlien:
             # Desabilita o movimento da espaçonave para a esquerda
             self.nave.movendo_abaixo = False
 
+    
+    def _clicou_botao_play(self, posicao):
+        clicou_botao = self.botao_play.rect.collidepoint(posicao)
+        if clicou_botao and not self.jogo_ativo:
+            self.estatisticas.reinicia_estatisticas()
+            self.jogo_ativo = True
+        
+            #Descarta as balas e oa alienígenas restantes
+            self.balas.empty()
+            self.aliens.empty()
+
+            #Cria uma nova frota de alienígenas e centraliza a nave
+            self._cria_frota_alien()
+            self.nave.centraliza_nave()
+
 
     def _checa_eventos(self):
         # Observa os eventos de teclado e mouse
@@ -85,6 +104,12 @@ class InvasaoAlien:
                 
                 elif event.type == pygame.KEYUP:
                     self._checa_keyup_eventos(event)
+
+                #Verifica clique de botão esquerdo do mouse
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    posicao_mouse = pygame.mouse.get_pos()
+                    self._clicou_botao_play(posicao_mouse)
+
 
 
     def _dispara_bala(self):
@@ -199,8 +224,8 @@ class InvasaoAlien:
         largura_alien, altura_alien = alien.rect.size
         #Aqui passamos as coordenadas iniciais x e y do alienígena
         x_atual = largura_alien
-        y_atual = altura_alien
-        while y_atual < (self.config.altura_tela - 3 * altura_alien):
+        y_atual = 2 * altura_alien
+        while y_atual < (self.config.altura_tela - 5 * altura_alien):
             while x_atual < (self.config.largura_tela - 2 * largura_alien):
                 self._cria_alien(x_atual, y_atual)
                 x_atual +=  2 * largura_alien
@@ -215,8 +240,12 @@ class InvasaoAlien:
         self.tela.fill(self.config.cor_fundo)
         for bala in self.balas.sprites():
             bala.desenha_bala()
-        self.nave.blitme()
+        self.nave.desenha_nave()
         self.aliens.draw(self.tela)
+
+        #Desenha o botão Play se o jogo estiver inativo
+        if not self.jogo_ativo:
+            self.botao_play.desenha_botao()
             
         #Deixa a tela desenhada mais recente visível
         pygame.display.flip()
@@ -228,7 +257,7 @@ class InvasaoAlien:
             self._checa_eventos()
             # Caso as espaçonaves acabem, o jogo congela
             if self.jogo_ativo:
-                self.nave.atualiza()
+                self.nave.atualiza_nave()
                 self._atualiza_balas()
                 self._atualiza_aliens()
             

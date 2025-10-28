@@ -27,7 +27,7 @@ class Nave:
         self.movendo_abaixo = False
 
 
-    def atualiza(self):
+    def atualiza_nave(self):
         """Atualiza a posição da espaçonave com base nas flags de movimento"""
         if self.movendo_direita and (self.rect.right < self.tela_rect.right):
             self.x += self.config.velocidade_nave
@@ -43,7 +43,7 @@ class Nave:
         self.rect.y = self.y
 
 
-    def blitme(self):
+    def desenha_nave(self):
         """Desenha a espaçonave em sua localização atual"""
         self.tela.blit(self.image, self.rect)
 

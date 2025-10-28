@@ -17,6 +17,12 @@ class Bala (Sprite):
         # Armazena a posição da bala como um float
         self.y = float(self.rect.y)
 
+
+    def desenha_bala(self):
+        """ Desenha a bala na tela"""
+        pygame.draw.rect(self.tela, self.cor, self.rect)
+        
+
     def update(self):
         """ Desloca a bala verticalmente pela tela"""
         # Atualiza a posição exata da bala
@@ -24,6 +30,4 @@ class Bala (Sprite):
         #Atualiza a posição do rect
         self.rect.y = self.y
 
-    def desenha_bala(self):
-        """ Desenha a bala na tela"""
-        pygame.draw.rect(self.tela, self.cor, self.rect)
+    
