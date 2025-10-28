@@ -3,6 +3,7 @@ import pygame, sys
 from config import Config
 from espaconave import Nave
 from bala import Bala
+from alien import Alienigena
 
 class InvasaoAlien:
     def __init__(self):
@@ -22,6 +23,9 @@ class InvasaoAlien:
         pygame.display.set_caption("Invasão Alien")
         self.nave = Nave(self)
         self.balas = pygame.sprite.Group()
+        self.aliens = pygame.sprite.Group()
+
+        self._cria_frota_alien()
 
 
     def _checa_keydown_eventos(self,event):
@@ -97,6 +101,35 @@ class InvasaoAlien:
         #Somente para verificação, pode remover
         #print(len(self.balas))
 
+
+    def _cria_alien(self, pos_horizontal, pos_vertical):
+        """ Cria um alienígena e posiciona na fileira"""
+        novo_alien = Alienigena(self)
+        novo_alien.x = pos_horizontal
+        novo_alien.rect.x = pos_horizontal
+        novo_alien.rect.y = pos_vertical
+        self.aliens.add(novo_alien)
+
+
+    def _cria_frota_alien(self):
+        """ Cria uma frota de alienígenas"""
+        # Cria um alienígena e continua adicionando alienígenas
+        # até que não haja mais espaço
+        # O distanciamento entre alienígenas é a largura de um alienígena
+        alien = Alienigena(self)
+        #Aqui pegmos a largura e a altura do alien através do rect.size
+        largura_alien, altura_alien = alien.rect.size
+        #Aqui passamos as coordenadas iniciais x e y do alienígena
+        x_atual = largura_alien
+        y_atual = altura_alien
+        while y_atual < (self.config.altura_tela - 3 * altura_alien):
+            while x_atual < (self.config.largura_tela - 2 * largura_alien):
+                self._cria_alien(x_atual, y_atual)
+                x_atual +=  2 * largura_alien
+            # Termina a fileira, reinicia o valor de x e incrementa o valor de y
+            x_atual = largura_alien
+            y_atual += 2 * altura_alien
+
     
     def _atualiza_tela(self):
         #Redesenha a tela durante cada passagem pelo loop
@@ -105,6 +138,7 @@ class InvasaoAlien:
         for bala in self.balas.sprites():
             bala.desenha_bala()
         self.nave.blitme()
+        self.aliens.draw(self.tela)
             
         #Deixa a tela desenhada mais recente visível
         pygame.display.flip()
