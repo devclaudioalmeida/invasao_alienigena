@@ -1,11 +1,15 @@
 import pygame, sys
 
+from time import sleep
+
 from config import Config
 from espaconave import Nave
 from bala import Bala
 from alien import Alienigena
+from estatisticas import EstatisticasJogo
 
 class InvasaoAlien:
+    """Classe principal do jogo"""
     def __init__(self):
         """Inicializa o jogo e cria os recursos do jogo"""
         pygame.init()
@@ -21,11 +25,15 @@ class InvasaoAlien:
         #self.config.altura_tela = self.tela.get_rect().height
 
         pygame.display.set_caption("Invasão Alien")
+        self.estatisticas = EstatisticasJogo(self)
         self.nave = Nave(self)
         self.balas = pygame.sprite.Group()
         self.aliens = pygame.sprite.Group()
 
         self._cria_frota_alien()
+
+        # Inicializa Invasão Alienigena com um estado ativo
+        self.jogo_ativo = True
 
 
     def _checa_keydown_eventos(self,event):
@@ -112,12 +120,49 @@ class InvasaoAlien:
 
         # Se alguma bala atingir algum alienígena eleimina ambos
         self._verifica_colisao_bala_alien()
+    
+
+    def _nave_bateu(self):
+        """ Responde à espaçonave sendo abatida por um alienígena"""
+        if self.estatisticas.naves_restantes > 0:
+            # Diminue uma espaçonave restante
+            self.estatisticas.naves_restantes -= 1
+
+            # Descarta balas e alienígenas restantes
+            self.balas.empty()
+            self.aliens.empty()
+
+            # Cria uma frota nova de alienígenas e centraliza a espaçonave
+            self._cria_frota_alien()
+            self.nave.centraliza_nave()
+
+            # Pausa de meio segundo
+            sleep(0.5)
+        else:
+            self.jogo_ativo = False
+
+    
+    def _verifica_alien_embaixo(self):
+        """ Verifica se algum alienígena chegou a parte inferior da tela"""
+        for alien in self.aliens.sprites():
+            if alien.rect.bottom >= self.config.altura_tela:
+                # Trata isso como se a espaçonave tivesso batido
+                self._nave_bateu()
+                break
 
 
     def _atualiza_aliens(self):
         """Verifica se tem algum alienígena na borda, em seguida atualiza as posiçoes"""
         self._verifica_alien_na_borda()
         self.aliens.update()
+
+        # Detecta colisões entre alienigenas e espaçonaves
+        if pygame.sprite.spritecollideany(self.nave, self.aliens):
+            self._nave_bateu()
+            #print('A nave bateu!')
+        
+        # Verifica se algum alienígena chegou a parte inferior da tela
+        self._verifica_alien_embaixo()
 
 
     def _cria_alien(self, pos_horizontal, pos_vertical):
@@ -181,16 +226,19 @@ class InvasaoAlien:
         """Inicia o loop principal do jogo"""
         while True:
             self._checa_eventos()
-            self.nave.atualiza()
-            self._atualiza_balas()
-            self._atualiza_aliens()
+            # Caso as espaçonaves acabem, o jogo congela
+            if self.jogo_ativo:
+                self.nave.atualiza()
+                self._atualiza_balas()
+                self._atualiza_aliens()
+            
             self._atualiza_tela()
             self.clock.tick(60)
 
     
 
 if __name__ == '__main__':
-    #Cria a instancia do jogo e executa o jogo
+    #Cria a instancia do jogo e executa
     ai = InvasaoAlien()
     ai.executa_jogo()
     

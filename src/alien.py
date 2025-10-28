@@ -25,6 +25,7 @@ class Alienigena (Sprite):
         tela_rect = self.tela.get_rect()
         return (self.rect.right >= tela_rect.right) or (self.rect.left <= 0)
     
+    
     def update(self):
         """Move o alienígena para a direita ou esquerda"""
         self.x += self.config.velocidade_alien * self.config.direcao_frota

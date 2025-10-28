@@ -1,4 +1,5 @@
 class Config:
+    """Classe para gerenciar as configurações dos componentes do jogo"""
     def __init__(self):
         """Inicializa as configurações do jogo"""
         #Configurações da tela
@@ -8,6 +9,7 @@ class Config:
         
         #Configurações da espaçonave
         self.velocidade_nave = 1.5
+        self.limite_naves = 3
 
         # Configurações do projétil
         self.velocidade_bala = 2.5

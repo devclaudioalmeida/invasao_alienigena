@@ -1,6 +1,7 @@
 import pygame
 
 class Nave:
+    """Classe para gerenciar espaçonaves"""
     def __init__(self, ai_jogo):
         """Inicializa a espaçonave e define sua posição inicial"""
         self.tela = ai_jogo.tela
@@ -25,6 +26,7 @@ class Nave:
         self.movendo_acima = False
         self.movendo_abaixo = False
 
+
     def atualiza(self):
         """Atualiza a posição da espaçonave com base nas flags de movimento"""
         if self.movendo_direita and (self.rect.right < self.tela_rect.right):
@@ -40,6 +42,12 @@ class Nave:
         self.rect.x = self.x
         self.rect.y = self.y
 
+
     def blitme(self):
         """Desenha a espaçonave em sua localização atual"""
         self.tela.blit(self.image, self.rect)
+
+    
+    def centraliza_nave(self):
+        self.rect.midbottom = self.tela_rect.midbottom
+        self.x = float(self.rect.x)
