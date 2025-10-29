@@ -154,8 +154,10 @@ class InvasaoAlien:
 
         # Se um alienígena for abatido
         if colisoes:
-            self.estatisticas.pontuacao += self.config.pontos_alien
+            for ali in colisoes.values():
+                self.estatisticas.pontuacao += self.config.pontos_alien * len(ali)
             self.pontuacao.prepara_pontos()
+            self.pontuacao.checa_pontuacao_maxima()
 
 
     def _atualiza_balas(self):

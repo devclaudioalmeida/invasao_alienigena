@@ -11,17 +11,18 @@ class Config:
         self.limite_naves = 3
 
         # Configurações do projétil
-        self.largura_bala = 3
-        self.altura_bala = 8
+        self.largura_bala = 2
+        self.altura_bala = 6
         self.cor_bala = (60, 60, 60)
-        self.balas_permitidas = 5
+        self.balas_permitidas = 15
 
         # Configuração do alienígena
         self.velocidade_descida_frota = 10
         
-        
         # A rapidez que o jogo acelera
         self.escala_aumento_velocidade = 1.1
+        # Escala para aumentar a pontuação de acordo com que a velocidade do jogo aumenta
+        self.escala_aumento_pontuacao = 1.5
 
         self.incializa_configuracoes_dinamicas()
 
@@ -43,4 +44,5 @@ class Config:
         self.velocidade_alien *= self.escala_aumento_velocidade
         self.velocidade_bala *= self.escala_aumento_velocidade
         self.velocidade_nave *= self.escala_aumento_velocidade
+        self.pontos_alien = int(self.pontos_alien * self.escala_aumento_pontuacao)
 

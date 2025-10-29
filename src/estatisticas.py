@@ -5,6 +5,9 @@ class EstatisticasJogo:
         self.config = ai_jogo.config
         self.reinicia_estatisticas()
 
+        # Apontuação máxima nunca deve ser redefinida
+        self.max_pontos= 0
+
 
     def reinicia_estatisticas(self):
         """ Reinicializa as estatísticas que podem mudar durante o jogo"""
