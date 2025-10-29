@@ -3,7 +3,7 @@ class Config:
     def __init__(self):
         """Inicializa as configurações do jogo"""
         #Configurações da tela
-        self.largura_tela = 1400
+        self.largura_tela = 1600
         self.altura_tela = 900
         self.cor_fundo = (230, 230, 230)
         
@@ -14,7 +14,7 @@ class Config:
         self.largura_bala = 2
         self.altura_bala = 6
         self.cor_bala = (60, 60, 60)
-        self.balas_permitidas = 15
+        self.balas_permitidas = 5
 
         # Configuração do alienígena
         self.velocidade_descida_frota = 10
@@ -22,14 +22,14 @@ class Config:
         # A rapidez que o jogo acelera
         self.escala_aumento_velocidade = 1.1
         # Escala para aumentar a pontuação de acordo com que a velocidade do jogo aumenta
-        self.escala_aumento_pontuacao = 1.5
+        self.escala_aumento_pontuacao = 1.2
 
         self.incializa_configuracoes_dinamicas()
 
     def incializa_configuracoes_dinamicas(self):
         """ Inicializa as configurações que mudam ao longo do tempo"""
         self.velocidade_nave = 1.5
-        self.velocidade_bala = 2.5
+        self.velocidade_bala = 3.0
         self.velocidade_alien = 1.0
 
         # Quando direcao_frota = 1 (movimenta para direita)

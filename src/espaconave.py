@@ -1,8 +1,11 @@
 import pygame
 
-class Nave:
+from pygame.sprite import Sprite
+
+class Nave (Sprite):
     """Classe para gerenciar espaçonaves"""
     def __init__(self, ai_jogo):
+        super().__init__()
         """Inicializa a espaçonave e define sua posição inicial"""
         self.tela = ai_jogo.tela
         self.config = ai_jogo.config

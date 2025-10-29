@@ -2,13 +2,13 @@ import pygame, sys
 
 from time import sleep
 
-from config import Config
-from espaconave import Nave
-from bala import Bala
-from alien import Alienigena
-from estatisticas import EstatisticasJogo
-from dados import DadosJogo
-from botao import Botao
+from src.config import Config
+from src.espaconave import Nave
+from src.bala import Bala
+from src.alien import Alienigena
+from src.estatisticas import EstatisticasJogo
+from src.dados import DadosJogo
+from src.botao import Botao
 
 class InvasaoAlien:
     """Classe principal do jogo"""
@@ -88,6 +88,7 @@ class InvasaoAlien:
         self.estatisticas.reinicia_estatisticas()
         self.pontuacao.prepara_pontos()
         self.pontuacao.prepara_nivel()
+        self.pontuacao.prepara_naves()
         self.jogo_ativo = True
         
         #Descarta as balas e oa alienígenas restantes
@@ -141,6 +142,17 @@ class InvasaoAlien:
         if len(self.balas) < self.config.balas_permitidas:
             nova_bala = Bala(self)
             self.balas.add(nova_bala)
+    
+
+    def _comeca_novo_nivel(self):
+        # Destroi os projeteis existentes e cria uma frota de alienigenas nova
+        # e aumenta a velocidade do jogo em um novo nível
+            self.balas.empty()
+            self._cria_frota_alien()
+            self.config.aumenta_velocidade_jogo()
+            self.estatisticas.nivel += 1
+            self.pontuacao.prepara_nivel()
+
 
 
     def _verifica_colisao_bala_alien(self):
@@ -148,12 +160,9 @@ class InvasaoAlien:
         #Se sim descarta a bala e o alienígena
         colisoes = pygame.sprite.groupcollide(self.balas, self.aliens, True, True)
         if not self.aliens:
-            # Destroi os projeteis existentes e cria uma frota de alienigenas nova
-            self.balas.empty()
-            self._cria_frota_alien()
-            self.config.aumenta_velocidade_jogo()
-            self.estatisticas.nivel += 1
-            self.pontuacao.prepara_nivel()
+            # Se todos os alinígenas tiverem sido destruidos, começa um nível novo
+            self._comeca_novo_nivel()
+            
 
         # Se um alienígena for abatido
         if colisoes:
@@ -184,6 +193,7 @@ class InvasaoAlien:
         if self.estatisticas.naves_restantes > 0:
             # Diminue uma espaçonave restante
             self.estatisticas.naves_restantes -= 1
+            self.pontuacao.prepara_naves()
 
             # Descarta balas e alienígenas restantes
             self.balas.empty()
@@ -299,12 +309,4 @@ class InvasaoAlien:
                 self._atualiza_aliens()
             
             self._atualiza_tela()
-            self.clock.tick(60)
-
-    
-
-if __name__ == '__main__':
-    #Cria a instancia do jogo e executa
-    ai = InvasaoAlien()
-    ai.executa_jogo()
-    
+            self.clock.tick(60)    
