@@ -8,19 +8,39 @@ class Config:
         self.cor_fundo = (230, 230, 230)
         
         #Configurações da espaçonave
-        self.velocidade_nave = 1.5
         self.limite_naves = 3
 
         # Configurações do projétil
-        self.velocidade_bala = 2.5
         self.largura_bala = 3
         self.altura_bala = 8
         self.cor_bala = (60, 60, 60)
         self.balas_permitidas = 5
 
         # Configuração do alienígena
-        self.velocidade_alien = 1.0
         self.velocidade_descida_frota = 10
-        #direcao_frota = 1 (movimenta para direita)
-        #direcao_frota = -1 (movimenta para esquerda)
+        
+        
+        # A rapidez que o jogo acelera
+        self.escala_aumento_velocidade = 1.1
+
+        self.incializa_configuracoes_dinamicas()
+
+    def incializa_configuracoes_dinamicas(self):
+        """ Inicializa as configurações que mudam ao longo do tempo"""
+        self.velocidade_nave = 1.5
+        self.velocidade_bala = 2.5
+        self.velocidade_alien = 1.0
+
+        # Quando direcao_frota = 1 (movimenta para direita)
+        # Quando direcao_frota = -1 (movimenta para esquerda)
         self.direcao_frota = 1
+
+        #Configurações de pontuação
+        self.pontos_alien = 10
+
+    def aumenta_velocidade_jogo(self):
+        """Aumenta as configurações de velocidade"""
+        self.velocidade_alien *= self.escala_aumento_velocidade
+        self.velocidade_bala *= self.escala_aumento_velocidade
+        self.velocidade_nave *= self.escala_aumento_velocidade
+

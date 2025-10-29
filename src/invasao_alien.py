@@ -7,6 +7,7 @@ from espaconave import Nave
 from bala import Bala
 from alien import Alienigena
 from estatisticas import EstatisticasJogo
+from dados import DadosJogo
 from botao import Botao
 
 class InvasaoAlien:
@@ -17,16 +18,17 @@ class InvasaoAlien:
         self.clock = pygame.time.Clock()
         self.config = Config()
 
-        #Tamanho de tela padrão
+        #Tamanho de tela pré-configurado
         self.tela = pygame.display.set_mode((self.config.largura_tela, self.config.altura_tela))
 
-        #tela Cheia
+        #Tela Cheia
         #self.tela = pygame.display.set_mode((0,0), pygame.FULLSCREEN)
         #self.config.largura_tela = self.tela.get_rect().width
         #self.config.altura_tela = self.tela.get_rect().height
 
         pygame.display.set_caption("Invasão Alien")
         self.estatisticas = EstatisticasJogo(self)
+        self.pontuacao = DadosJogo(self)
         self.nave = Nave(self)
         self.balas = pygame.sprite.Group()
         self.aliens = pygame.sprite.Group()
@@ -57,6 +59,9 @@ class InvasaoAlien:
         elif event.key == pygame.K_SPACE:
             # dispara uma bala cada vez que pressonar a tecla "ESPAÇO"
             self._dispara_bala()
+        
+        elif event.key == pygame.K_p:
+            self._apertou_p_para_jogar()
                 
         elif event.key == pygame.K_ESCAPE:
             # Exerra o jogo quando pressiona a técla "ESC"
@@ -78,19 +83,35 @@ class InvasaoAlien:
             self.nave.movendo_abaixo = False
 
     
+    def _ativa_jogo(self):
+        # Redefine as estatísticas do jogo
+        self.estatisticas.reinicia_estatisticas()
+        self.pontuacao.prepara_pontos()
+        self.jogo_ativo = True
+        
+        #Descarta as balas e oa alienígenas restantes
+        self.balas.empty()
+        self.aliens.empty()
+
+        #Cria uma nova frota de alienígenas e centraliza a nave
+        self._cria_frota_alien()
+        self.nave.centraliza_nave()
+
+        #Oculta o cursor do mouse enquanto o jogo estiver ativo
+        pygame.mouse.set_visible(False)
+
+    
     def _clicou_botao_play(self, posicao):
         clicou_botao = self.botao_play.rect.collidepoint(posicao)
         if clicou_botao and not self.jogo_ativo:
-            self.estatisticas.reinicia_estatisticas()
-            self.jogo_ativo = True
-        
-            #Descarta as balas e oa alienígenas restantes
-            self.balas.empty()
-            self.aliens.empty()
+            self.config.incializa_configuracoes_dinamicas()
+            self._ativa_jogo()
 
-            #Cria uma nova frota de alienígenas e centraliza a nave
-            self._cria_frota_alien()
-            self.nave.centraliza_nave()
+
+    def _apertou_p_para_jogar(self):
+        if not self.jogo_ativo:
+            self.config.incializa_configuracoes_dinamicas()
+            self._ativa_jogo()
 
 
     def _checa_eventos(self):
@@ -111,7 +132,6 @@ class InvasaoAlien:
                     self._clicou_botao_play(posicao_mouse)
 
 
-
     def _dispara_bala(self):
         """ 
         Cria uma nova bala e adiciona ao grupo de balas caso o numero de balas na tela seja menor que
@@ -121,6 +141,7 @@ class InvasaoAlien:
             nova_bala = Bala(self)
             self.balas.add(nova_bala)
 
+
     def _verifica_colisao_bala_alien(self):
         #Verifica se alguma bala atingiu algum alienígena
         #Se sim descarta a bala e o alienígena
@@ -129,6 +150,12 @@ class InvasaoAlien:
             # Destroi os projeteis existentes e cria uma frota de alienigenas nova
             self.balas.empty()
             self._cria_frota_alien()
+            self.config.aumenta_velocidade_jogo()
+
+        # Se um alienígena for abatido
+        if colisoes:
+            self.estatisticas.pontuacao += self.config.pontos_alien
+            self.pontuacao.prepara_pontos()
 
 
     def _atualiza_balas(self):
@@ -164,7 +191,11 @@ class InvasaoAlien:
             # Pausa de meio segundo
             sleep(0.5)
         else:
+            # Caso o jogador perca todas as espaçonaves o jogo fica inativo
+            # e o cursor do mouse aparece na tela caso o jogador queira
+            # clicar novamente em "JOGAR"
             self.jogo_ativo = False
+            pygame.mouse.set_visible(True)
 
     
     def _verifica_alien_embaixo(self):
@@ -242,6 +273,7 @@ class InvasaoAlien:
             bala.desenha_bala()
         self.nave.desenha_nave()
         self.aliens.draw(self.tela)
+        self.pontuacao.mostra_pontos()
 
         #Desenha o botão Play se o jogo estiver inativo
         if not self.jogo_ativo:
