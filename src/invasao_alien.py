@@ -87,6 +87,7 @@ class InvasaoAlien:
         # Redefine as estatísticas do jogo
         self.estatisticas.reinicia_estatisticas()
         self.pontuacao.prepara_pontos()
+        self.pontuacao.prepara_nivel()
         self.jogo_ativo = True
         
         #Descarta as balas e oa alienígenas restantes
@@ -151,6 +152,8 @@ class InvasaoAlien:
             self.balas.empty()
             self._cria_frota_alien()
             self.config.aumenta_velocidade_jogo()
+            self.estatisticas.nivel += 1
+            self.pontuacao.prepara_nivel()
 
         # Se um alienígena for abatido
         if colisoes:

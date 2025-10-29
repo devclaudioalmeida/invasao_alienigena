@@ -13,5 +13,6 @@ class EstatisticasJogo:
         """ Reinicializa as estatísticas que podem mudar durante o jogo"""
         self.naves_restantes = self.config.limite_naves
         self.pontuacao = 0
+        self.nivel = 1
     
         
